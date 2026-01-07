@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Painel Demonx</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: #05050c;
+    font-family: Arial, sans-serif;
+    color: #0ff;
+}
+
+/* ===== LOGIN ===== */
+#login {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#loginBox {
+    width: 260px;
+    padding: 20px;
+    background: rgba(5,5,15,0.9);
+    border: 1px solid #0ff;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 0 30px #00ffff55;
+}
+
+#loginBox h2 {
+    margin-bottom: 15px;
+    letter-spacing: 2px;
+}
+
+#loginBox input {
+    width: 100%;
+    padding: 8px;
+    background: #000;
+    border: 1px solid #0ff;
+    color: #0ff;
+    border-radius: 8px;
+}
+
+#loginBox button {
+    margin-top: 10px;
+    width: 100%;
+    padding: 8px;
+    background: transparent;
+    border: 1px solid #0ff;
+    color: #0ff;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+#msg {
+    margin-top: 10px;
+    font-size: 13px;
+}
+
+/* ===== PAINEL ===== */
+#painel {
+    display: none;
+    position: fixed;
+    top: 80px;
+    left: 40px;
+    width: 300px;
+    height: 420px;
+    border: 1px solid #0ff;
+    border-radius: 14px;
+    box-shadow: 0 0 25px #00ffff55;
+    overflow: hidden;
+}
+
+/* Canvas das partículas (dentro do painel) */
+#particles {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+/* Conteúdo acima das partículas */
+#conteudo {
+    position: relative;
+    z-index: 1;
+    padding: 15px;
+    background: rgba(5,5,20,0.75);
+    height: 100%;
+}
+
+/* Header */
+#header {
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    letter-spacing: 2px;
+}
+
+/* Funções */
+.funcao {
+    margin-bottom: 12px;
+}
+
+.funcao label {
+    font-size: 13px;
+}
+
+input[type=range] {
+    width: 100%;
+}
+
+button.toggle {
+    width: 100%;
+    padding: 8px;
+    background: transparent;
+    border: 1px solid #0ff;
+    color: #0ff;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+button.ativo {
+    background: #0ff;
+    color: #000;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div id="login">
+    <div id="loginBox">
+        <h2>PAINEL DEMONX</h2>
+        <input type="password" id="senha" placeholder="Digite a senha">
+        <button onclick="verificar()">ENTRAR</button>
+        <div id="msg"></div>
+    </div>
+</div>
+
+<!-- PAINEL -->
+<div id="painel">
+    <canvas id="particles"></canvas>
+
+    <div id="conteudo">
+        <div id="header">BEM-VINDO</div>
+
+        <div class="funcao">
+            <label>Aimbot (0–100)</label>
+            <input type="range" min="0" max="100" value="50">
+        </div>
+
+        <div class="funcao">
+            <label>AimFOV (0–100)</label>
+            <input type="range" min="0" max="100" value="40">
+        </div>
+
+        <div class="funcao">
+            <button class="toggle" onclick="toggle(this)">AimLock</button>
+        </div>
+
+        <div class="funcao">
+            <button class="toggle" onclick="toggle(this)">No Recoil</button>
+        </div>
+
+        <div class="funcao">
+            <button class="toggle" onclick="toggle(this)">Tela Esticada</button>
+        </div>
+
+        <div class="funcao">
+            <button class="toggle" onclick="toggle(this)">Ativar Auxílio</button>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ===== SENHA ===== */
+function verificar() {
+    const senha = document.getElementById("senha").value;
+    const msg = document.getElementById("msg");
+
+    if (senha === "V10") {
+        msg.style.color = "#0f0";
+        msg.innerText = "Bem-vindo";
+        setTimeout(() => {
+            document.getElementById("login").style.display = "none";
+            document.getElementById("painel").style.display = "block";
+            resizeCanvas();
+        }, 800);
+    } else {
+        msg.style.color = "#f00";
+        msg.innerText = "Senha incorreta";
+    }
+}
+
+function toggle(btn) {
+    btn.classList.toggle("ativo");
+}
+
+/* ===== PARTÍCULAS NO PAINEL ===== */
+const canvas = document.getElementById("particles");
+const ctx = canvas.getContext("2d");
+
+function resizeCanvas() {
+    canvas.width = document.getElementById("painel").offsetWidth;
+    canvas.height = document.getElementById("painel").offsetHeight;
+}
+
+let particles = [];
+for (let i = 0; i < 80; i++) {
+    particles.push({
+        x: Math.random() * 300,
+        y: Math.random() * 420,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        r: Math.random() * 2 + 1
+    });
+}
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = "#00ffff";
+        ctx.fill();
+    });
+
+    requestAnimationFrame(animate);
+}
+animate();
+</script>
+
+</body>
+</html>
